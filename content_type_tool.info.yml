@@ -1,0 +1,6 @@
+name: Custom content type tool
+description: Custom content type tool for Drupal 8.
+package: Custom
+
+type: module
+core: 8.x
