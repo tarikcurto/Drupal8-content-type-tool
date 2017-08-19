@@ -1,14 +1,12 @@
 langcode: en
 status: true
 dependencies:
-  config:
-  - field.storage.node.field_number_pl
-  - node.type.test
-id: node.test.field_number_pl
-field_name: field_number_pl
+  config: [  ]
+id: ''
+field_name: ''
 entity_type: node
-bundle: test
-label: number_pl
+bundle: ''
+label: ''
 description: ''
 required: false
 translatable: false

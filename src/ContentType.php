@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\custom_content_type;
+namespace Drupal\content_type_tool;
 
 /**
  *

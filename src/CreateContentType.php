@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\custom_content_type;
+namespace Drupal\content_type_tool;
 
 use Symfony\Component\Yaml\Yaml;
 
@@ -27,14 +27,33 @@ class CreateContentType
      *
      * @var array[]
      */
-    protected $nodeFieldMap;
+    protected $fieldMap;
 
     /**
      * Field node config YML structure.
      *
+     * [nodeTypeId => [ fieldId => fieldYmlFile, ...], ...]
+     *
      * @var array
      */
-    protected $nodeField;
+    protected $field;
+
+    /**
+     * Field storage map
+     *
+     * [fieldStorageId => fieldStorage]
+     *
+     * @var array[]
+     */
+    protected $fieldStorageMap;
+
+    /**
+     * Field storage.
+     * One field storage, multiple node fields.
+     *
+     * @var array
+     */
+    protected $fieldStorage;
 
     /**
      * Create nodeType
@@ -44,37 +63,31 @@ class CreateContentType
      *  name: required string
      * ]
      */
+
+    /**
+     *
+     * @var array
+     */
+    protected $formDisplayDefault;
+
+    /**
+     *
+     * @var array
+     */
+    protected $viewDisplayDefault;
+
+    /**
+     *
+     * @var array
+     */
+    protected $viewDisplayTeaser;
+
     public function __construct($options)
     {
         $this->resetNodeType();
 
         $this->nodeType['type'] = $options['type'];
         $this->nodeType['name'] = $options['name'];
-    }
-
-    /**
-     * Node type id
-     *
-     * @return string
-     */
-    public function getNodeTypeId(){
-
-        return $this->nodeType["type"];
-    }
-
-    /**
-     * Add node field to current content type.
-     *
-     * @param array $options [
-     *  id: string required,
-     *  field_name: string required,
-     *  label: string
-     * ]
-     */
-    public function addNodeField($options){
-
-        //TODO: Add Node field. Add partial content to form.
-        // TODO: $nodeField['bundle'] = $this->getNodeTypeId();
     }
 
     /**
@@ -89,29 +102,229 @@ class CreateContentType
     }
 
     /**
+     * Node type id.
+     *
+     * @return string
+     */
+    public function getNodeTypeId(){
+
+        return $this->nodeType["type"];
+    }
+
+    /**
+     * Node type config.
+     * Node type YML file name.
+     *
+     * @return string
+     */
+    public function getNodeTypeConfigKey(){
+
+        return 'node.type.' . $this->getNodeTypeId();
+    }
+
+    // =================================================================================================================
+
+    /**
+     * Add node field to current content type.
+     *
+     * @param string $fieldStorageType textline_plain, number_float
+     * @param array $options [
+     *  field_name: string required,
+     *  label: string,
+     * content_type: string [plain_line, float, body]
+     * ]
+     * @return string Field identifier.
+     */
+    public function addField($options, $fieldStorageType = 'textline_plain'){
+
+        $this->addFieldStorage($fieldStorageType);
+        $this->resetField($fieldStorageType);
+
+        $this->field['field_name']  = $options['field_name'];
+        $this->field['id'] = 'node.' . $this->getNodeTypeId() . '.' . $this->field['field_name'];
+        $this->field['bundle'] = $this->getNodeTypeId();
+        $this->field['dependencies']['config'][] = $this->getNodeTypeConfigKey();
+        $this->field['dependencies']['config'][] = $this->getFieldStorageConfigKey();
+
+        if(isset($options['label']))
+            $this->field['label'] = $options['label'];
+
+        $this->fieldMap[$this->getFieldConfigKey()] = $this->field;
+
+        return $this->getFieldId();
+    }
+
+    /**
+     * Get current nodeField config key.
+     * Node field YML file name.
+     *
+     * @return string Field identifier.
+     */
+    protected function getFieldConfigKey(){
+
+        return 'field.field.' . $this->field['id'];
+    }
+
+    /**
+     * Current field id.
+     *
+     * @return string
+     */
+    protected function  getFieldId(){
+
+        return $this->field['id'];
+    }
+
+    /**
      * Rebuild $nodeField attribute using
      * default nodeField YML file.
      *
-     *
-     * @param string $fieldType plain_line, float, body
+     * @param string $fieldStorageType plain_line, float, body
      * @return void
      */
-    protected function resetNodeField($fieldType = 'body')
+    protected function resetField($fieldStorageType = 'textline_plain')
     {
 
-        switch ($fieldType) {
+        switch ($fieldStorageType) {
 
-            case 'plain_line':
-                $this->nodeField = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/field.field.node._node._field_float.yml');
+            case 'number_float':
+                $this->field = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/field/number_float.yml');
                 break;
 
-            case 'float':
-                $this->nodeField = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/field.field.node._node._field_plain_line.yml');
-                break;
-
-            case 'body':
+            case 'textline_plain':
             default:
-                $this->nodeField = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/field.field.node._node.body.yml');
+                $this->field = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/field/textline_plain.yml');
+
         }
+    }
+
+    // =================================================================================================================
+
+    /**
+     * Add field storage config.
+     * Not use this method if your field storage is 'body'.
+     *
+     * @param $fieldStorageType
+     */
+    public function addFieldStorage($fieldStorageType){
+
+        if(isset($this->fieldMap['field.field.node.' . $fieldStorageType]) || $fieldStorageType == 'body')
+            return;
+
+        $this->resetFieldStorage($fieldStorageType);
+        $this->fieldStorageMap[$this->getFieldStorageConfigKey()] = $this->fieldStorage;
+    }
+
+    /**
+     * Get current field storage config key.
+     * Field storage YML file name.
+     *
+     * @return string
+     */
+    public function getFieldStorageConfigKey(){
+
+        return 'field.storage.' . $this->fieldStorage['id'];
+    }
+
+    /**
+     * Rebuild $fieldStorage attribute using
+     * assigned YML file.
+     *
+     * @param string $fieldStorageType number_float, textline_plain
+     * @return void
+     */
+
+    protected function resetFieldStorage($fieldStorageType){
+
+        switch ($fieldStorageType){
+
+            case 'number_float':
+                $this->fieldStorage = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/storage/number_float.yml');
+                break;
+
+            case 'textline_plain':
+            default:
+                $this->fieldStorage = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/storage/textline_plain.yml');
+        }
+    }
+
+    // =================================================================================================================
+
+    public function setCoreEntity(){
+
+        $this->setFormDisplayDefault();
+        $this->setViewDisplayDefault();
+        $this->setViewDisplayTeaser();
+
+        echo json_encode(get_object_vars($this));
+    }
+
+    /**
+     * @return void
+     */
+    protected function setFormDisplayDefault(){
+
+        $this->resetFormDisplayDefault();
+
+        // Base + node tpe
+        $this->formDisplayDefault['id'] = 'node.' . $this->getNodeTypeId() . '.default';
+        $this->formDisplayDefault['bundle'] = $this->getNodeTypeId();
+        $this->formDisplayDefault['dependencies']['config'][] = $this->getNodeTypeConfigKey();
+
+        // TODO: Fields
+    }
+
+    /**
+     * @return void
+     */
+    protected function resetFormDisplayDefault(){
+
+        $this->formDisplayDefault = Yaml::parse(ContentType::resourcesPath() . '/yml/config/core/core.entity_form_display.node._node.default.yml');
+    }
+
+    /**
+     * @return void
+     */
+    protected function setViewDisplayDefault(){
+
+        $this->resetViewDisplayDefault();
+
+        // Base + node tpe
+        $this->viewDisplayDefault['id'] = 'node.' . $this->getNodeTypeId() . '.default';
+        $this->viewDisplayDefault['bundle'] = $this->getNodeTypeId();
+        $this->viewDisplayDefault['dependencies']['config'][] = $this->getNodeTypeConfigKey();
+
+        // TODO: Fields
+    }
+
+    /**
+     * @return void
+     */
+    protected function resetViewDisplayDefault(){
+
+        $this->viewDisplayDefault = Yaml::parse(ContentType::resourcesPath() . '/yml/config/core/core.entity_view_display.node._node.default.yml');
+    }
+
+    /**
+     * @return void
+     */
+    protected function setViewDisplayTeaser(){
+
+        $this->resetViewDisplayTeaser();
+
+        // Base + node tpe
+        $this->viewDisplayTeaser['id'] = 'node.' . $this->getNodeTypeId() . '.teaser';
+        $this->viewDisplayTeaser['bundle'] = $this->getNodeTypeId();
+        $this->viewDisplayTeaser['dependencies']['config'][] = $this->getNodeTypeConfigKey();
+
+        // TODO: Fields
+    }
+
+    /**
+     * @return void
+     */
+    protected function resetViewDisplayTeaser(){
+
+        $this->viewDisplayTeaser = Yaml::parse(ContentType::resourcesPath() . '/yml/config/core/core.entity_view_display.node._node.teaser.yml');
     }
 }
