@@ -1,0 +1,14 @@
+{
+  "name": "tarikcurto/content_type_tool",
+  "description": "Custom content type tool for Drupal 8.",
+  "type": "drupal-module",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Tarik Curto",
+      "email": "centro.tarik@live.com"
+    }
+  ],
+  "require": {
+  }
+}
