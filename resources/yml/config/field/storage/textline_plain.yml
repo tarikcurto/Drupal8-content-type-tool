@@ -5,8 +5,8 @@ status: true
 dependencies:
     module:
       - node
-id: node.field_textline_plain
-field_name: field_textline_plain
+id: ''
+field_name: ''
 entity_type: node
 type: string
 settings:

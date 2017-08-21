@@ -20,12 +20,17 @@ class FieldStorage
      * Set field storage config.
      * Not use this method if your field storage is 'body'.
      *
+     * @param string $fieldName
      * @param $fieldStorageType
      * @return string Field storage config key
      */
-    public function setFieldStorage($fieldStorageType){
+    public function setFieldStorage($fieldName, $fieldStorageType){
 
         $this->resetFieldStorage($fieldStorageType);
+
+        $this->fieldStorage['id'] = 'node.' . $fieldName;
+        $this->fieldStorage['field_name'] = $fieldName;
+
         return $this->getFieldStorageConfigKey();
     }
 

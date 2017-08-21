@@ -5,8 +5,8 @@ status: true
 dependencies:
     module:
       - node
-id: node.field_number_float
-field_name: field_number_float
+id: ''
+field_name: ''
 entity_type: node
 type: float
 settings: []

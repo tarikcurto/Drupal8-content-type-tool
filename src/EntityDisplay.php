@@ -63,6 +63,44 @@ class EntityDisplay
         $this->formDisplayDefault['dependencies']['config'][] = $this->nodeType->getNodeTypeConfigKey();
 
         // Fields
+        $weightCounter = 40;
+        foreach ($this->fieldList as $field){
+
+            $this->formDisplayDefault['dependencies']['config'][] = $field->getFieldConfigKey();
+
+            $fieldContent = [
+                'weight' => ++$weightCounter,
+                'region' => 'content',
+                'third_party_settings' => [],
+                'settings' => [
+                    'placeholder' => ''
+                ]
+            ];
+            switch ($field->getField()['field_type']){
+
+                case 'float':
+
+                    $fieldContent['type'] = 'number';
+                    break;
+
+                case 'string':
+                default:
+                    $fieldContent['settings']['size'] = 60;
+                    $fieldContent['type'] = 'string_textfield';
+            }
+
+            $this->formDisplayDefault['content'][$field->getField()['field_name']] = $fieldContent;
+        }
+    }
+
+    public function getFormDisplayDefault(){
+
+        return $this->formDisplayDefault;
+    }
+
+    public function getFormDisplayDefaultConfigKey(){
+
+        return 'core.entity_form_display.node.' . $this->nodeType->getNodeTypeId() . '.default';
     }
 
     /**
@@ -88,6 +126,16 @@ class EntityDisplay
         // Fields
     }
 
+    public function getViewDisplayDefault(){
+
+        return $this->viewDisplayDefault;
+    }
+
+    public function getViewDisplayDefaultConfigKey(){
+
+        return 'core.entity_view_display.node.' . $this->nodeType->getNodeTypeId() . '.default';
+    }
+
     /**
      * @return void
      */
@@ -109,6 +157,16 @@ class EntityDisplay
         $this->viewDisplayTeaser['dependencies']['config'][] = $this->nodeType->getNodeTypeConfigKey();
 
         // Fields
+    }
+
+    public function getViewDisplayTeaser(){
+
+        return $this->viewDisplayTeaser;
+    }
+
+    public function getViewDisplayTeaserConfigKey(){
+
+        return 'core.entity_view_display.node.' . $this->nodeType->getNodeTypeId() . '.teaser';
     }
 
     /**
