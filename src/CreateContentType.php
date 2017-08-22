@@ -1,7 +1,7 @@
 <?php
 
 namespace Drupal\content_type_tool;
-use Drupal\Core\Serialization\Yaml;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * TODO: add support for field types: html, plain_text
@@ -47,13 +47,31 @@ class CreateContentType
     }
 
     /**
+     * Add body field configuration.
+     *
+     * @return string
+     */
+    public function addFieldBody(){
+
+        $this->fieldInstance = new Field();
+
+        $options = [];
+        $options['node_type_id'] = $this->nodeTypeInstance->getNodeTypeId();
+        $options['node_type_config_key'] = $this->nodeTypeInstance->getNodeTypeConfigKey();
+        $fieldId = $this->fieldInstance->setBody($options);
+
+        $this->fieldInstanceList[$this->fieldInstance->getFieldConfigKey()] = $this->fieldInstance;
+        return $fieldId;
+    }
+
+    /**
      * Add field configuration.
      *
      * @param array $options
      * @param string $contentType
      * @return string
      */
-    public function addField($options, $contentType = 'textline_plain'){
+    public function addField($options, $contentType = 'string_textfield'){
 
         $this->fieldInstance = new Field();
         $this->fieldStorageInstance = new FieldStorage();
@@ -90,8 +108,8 @@ class CreateContentType
 
         $this->setConfigMap();
 
-        //foreach ($this->configMap as $configKey => $config){
-        //    echo PHP_EOL . PHP_EOL . $configKey . PHP_EOL . json_encode($config);
+        //foreach ($this->configMap as $configKey => $config) {
+        //    echo PHP_EOL . PHP_EOL . $configKey . PHP_EOL . Yaml::dump($config);
         //}
     }
 

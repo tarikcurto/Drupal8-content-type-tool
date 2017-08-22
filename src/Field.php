@@ -15,9 +15,29 @@ class Field
     protected $field;
 
     /**
+     * Set node field BODY to current content type.
+     *
+     * @param array $options [
+     *  node_type_id: string required,
+     *  node_type_config_key: string  required
+     * ]
+     * @return string Field identifier.
+     */
+    public function setBody($options){
+
+        $this->resetField('body');
+
+        $this->field['id'] = 'node.' . $options['node_type_id'] . '.body';
+        $this->field['bundle'] = $options['node_type_id'];
+        $this->field['dependencies']['config'][] = $options['node_type_config_key'];
+
+        return $this->getFieldId();
+    }
+
+    /**
      * Set node field to current content type.
      *
-     * @param string $fieldStorageType textline_plain, number_float
+     * @param string $fieldStorageType string_textfield, number_float
      * @param array $options [
      *  node_type_id: string required,
      *  node_type_config_key: string  required,
@@ -27,7 +47,7 @@ class Field
      * ]
      * @return string Field identifier.
      */
-    public function setField($options, $fieldStorageType = 'textline_plain'){
+    public function setField($options, $fieldStorageType = 'string_textfield'){
 
 
         $this->resetField($fieldStorageType);
@@ -79,21 +99,26 @@ class Field
      * Rebuild $nodeField attribute using
      * default nodeField YML file.
      *
-     * @param string $fieldStorageType plain_line, float, body
+     * @param string $fieldStorageType string_textfield, float, body
      * @return void
      */
-    protected function resetField($fieldStorageType = 'textline_plain')
+    protected function resetField($fieldStorageType = 'string_textfield')
     {
 
         switch ($fieldStorageType) {
 
+            case 'body':
+                $this->field = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/field/body.yml');
+                break;
+
             case 'number_float':
+                // TODO: add really support for numbers!.
                 $this->field = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/field/number_float.yml');
                 break;
 
-            case 'textline_plain':
+            case 'string_textfield':
             default:
-                $this->field = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/field/textline_plain.yml');
+                $this->field = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/field/string_textfield.yml');
 
         }
     }

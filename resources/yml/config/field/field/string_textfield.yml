@@ -2,7 +2,6 @@ langcode: en
 status: true
 dependencies:
   config: [ ]
-  module: [ ]
 id: ''
 field_name: ''
 entity_type: node

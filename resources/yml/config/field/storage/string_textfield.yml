@@ -1,4 +1,4 @@
-# field.storage.node.field_textline_plain
+# field.storage.node.field_string_textfield
 
 langcode: en
 status: true

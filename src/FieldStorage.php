@@ -59,7 +59,7 @@ class FieldStorage
      * Rebuild $fieldStorage attribute using
      * assigned YML file.
      *
-     * @param string $fieldStorageType number_float, textline_plain
+     * @param string $fieldStorageType number_float, string_textfield
      * @return void
      */
 
@@ -71,9 +71,9 @@ class FieldStorage
                 $this->fieldStorage = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/storage/number_float.yml');
                 break;
 
-            case 'textline_plain':
+            case 'string_textfield':
             default:
-                $this->fieldStorage = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/storage/textline_plain.yml');
+                $this->fieldStorage = Yaml::parse(ContentType::resourcesPath() . '/yml/config/field/storage/string_textfield.yml');
         }
     }
 }
