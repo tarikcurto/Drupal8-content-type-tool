@@ -63,30 +63,54 @@ class EntityDisplay
         $this->formDisplayDefault['dependencies']['config'][] = $this->nodeType->getNodeTypeConfigKey();
 
         // Fields
-        $weightCounter = 40;
+        $weightCounter = 30;
         foreach ($this->fieldList as $field){
 
             $this->formDisplayDefault['dependencies']['config'][] = $field->getFieldConfigKey();
+            $fieldContent = [];
 
-            $fieldContent = [
-                'weight' => ++$weightCounter,
-                'region' => 'content',
-                'third_party_settings' => [],
-                'settings' => [
-                    'placeholder' => ''
-                ]
-            ];
             switch ($field->getField()['field_type']){
 
+                // TODO: check this (only float)
                 case 'float':
+                    $fieldContent = [
+                        'weight' => ++$weightCounter,
+                        'region' => 'content',
+                        'third_party_settings' => [],
+                        'type' => 'number',
+                        'settings' => [
+                            'placeholder' => ''
+                        ]
+                    ];
+                    break;
 
-                    $fieldContent['type'] = 'number';
+                case 'text_with_summary':
+                    $fieldContent = [
+                        'weight' => ++$weightCounter,
+                        'region' => 'content',
+                        'third_party_settings' => [],
+                        'type' => 'text_textarea_with_summary',
+                        'settings' => [
+                            'placeholder' => '',
+                            'summary_rows' => 3,
+                            'rows' => 9
+                        ]
+                    ];
                     break;
 
                 case 'string':
                 default:
-                    $fieldContent['settings']['size'] = 60;
-                    $fieldContent['type'] = 'string_textfield';
+                    $fieldContent = [
+                        'weight' => ++$weightCounter,
+                        'region' => 'content',
+                        'third_party_settings' => [],
+                        'type' => 'string_textfield',
+                        'settings' => [
+                            'placeholder' => '',
+                            'size' => 60
+                        ]
+                    ];
+
             }
 
             $this->formDisplayDefault['content'][$field->getField()['field_name']] = $fieldContent;
