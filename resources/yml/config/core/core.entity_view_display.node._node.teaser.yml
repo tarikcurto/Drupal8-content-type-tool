@@ -1,11 +1,17 @@
 langcode: en
 status: true
 dependencies:
-  config: [  ]
-  module: [  ]
+  config:
+    - core.entity_view_mode.node.teaser
+  module:
+    - text
+    - user
 id: ''
 targetEntityType: node
 bundle: ''
 mode: teaser
-content: {  }
-hidden: []
+content:
+  links:
+    weight: 100
+    region: content
+hidden: {  }

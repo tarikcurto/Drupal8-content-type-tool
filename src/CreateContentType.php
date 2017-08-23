@@ -108,9 +108,9 @@ class CreateContentType
 
         $this->setConfigMap();
 
-        //foreach ($this->configMap as $configKey => $config) {
-        //    echo PHP_EOL . PHP_EOL . $configKey . PHP_EOL . Yaml::dump($config);
-        //}
+        foreach ($this->configMap as $configKey => $config) {
+            echo PHP_EOL . PHP_EOL . $configKey . PHP_EOL . Yaml::dump($config);
+        }
     }
 
     /**

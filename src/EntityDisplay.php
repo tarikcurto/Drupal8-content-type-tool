@@ -148,6 +148,55 @@ class EntityDisplay
         $this->viewDisplayDefault['dependencies']['config'][] = $this->nodeType->getNodeTypeConfigKey();
 
         // Fields
+        $weightCounter = 100;
+        foreach ($this->fieldList as $field){
+
+            $this->viewDisplayDefault['dependencies']['config'][] = $field->getFieldConfigKey();
+            $fieldContent = [];
+
+            switch ($field->getField()['field_type']){
+
+                // TODO: check this (only float)
+                case 'float':
+                    $fieldContent = [
+                        'weight' => ++$weightCounter,
+                        'region' => 'content',
+                        'third_party_settings' => [],
+                        'type' => 'number',
+                        'settings' => [
+                            'placeholder' => ''
+                        ]
+                    ];
+                    break;
+
+                case 'text_with_summary':
+                    $fieldContent = [
+                        'weight' => ++$weightCounter,
+                        'label' => 'hidden',
+                        'settings' => [],
+                        'third_party_settings' => [],
+                        'type' => 'text_default',
+                        'region' => 'content',
+                    ];
+                    break;
+
+                case 'string':
+                default:
+                    $fieldContent = [
+                        'weight' => ++$weightCounter,
+                        'label' => 'above',
+                        'settings' => [
+                            'link_to_entity' => false,
+                        ],
+                        'third_party_settings' => [],
+                        'type' => 'string',
+                        'region' => 'content',
+                    ];
+
+            }
+
+            $this->viewDisplayDefault['content'][$field->getField()['field_name']] = $fieldContent;
+        }
     }
 
     public function getViewDisplayDefault(){
@@ -181,6 +230,28 @@ class EntityDisplay
         $this->viewDisplayTeaser['dependencies']['config'][] = $this->nodeType->getNodeTypeConfigKey();
 
         // Fields
+        $weightCounter = 100;
+        foreach ($this->fieldList as $field){
+
+            switch ($field->getField()['field_name']){
+
+                case 'body':
+                    $fieldContent = [
+                        'label' => 'hidden',
+                        'type' => 'text_summary_or_trimmed',
+                        'weight' => ++$weightCounter,
+                        'settings' => [
+                            'trim_length' => 600
+                        ],
+                        'third_party_settings' => [],
+                        'region' => 'content',
+                    ];
+                    $this->viewDisplayTeaser['dependencies']['config'][] = $field->getFieldConfigKey();
+                    $this->viewDisplayTeaser['content'][$field->getField()['field_name']] = $fieldContent;
+                    break;
+            }
+
+        }
     }
 
     public function getViewDisplayTeaser(){

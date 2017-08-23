@@ -2,10 +2,15 @@ langcode: en
 status: true
 dependencies:
   config: [  ]
-  module: [  ]
+  module:
+    - text
+    - user
 id: ''
 targetEntityType: node
 bundle: ''
 mode: default
-content: {  }
+content:
+  links:
+    weight: 100
+    region: content
 hidden: [  ]
