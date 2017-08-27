@@ -1,11 +1,19 @@
 <?php
+/**
+ * DRUPAL 8 Content type tool.
+ * Copyright (C) 2017. Tarik Curto <centro.tarik@live.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ */
 
 namespace Drupal\content_type_tool;
 
 use Symfony\Component\Yaml\Yaml;
 
-class EntityDisplay
-{
+class EntityDisplay {
 
     /**
      * @var NodeType
@@ -40,7 +48,7 @@ class EntityDisplay
      * @param NodeType $nodeType
      * @param $fieldList Field[]
      */
-    public function setEntityDisplay(NodeType $nodeType, $fieldList){
+    public function setEntityDisplay(NodeType $nodeType, $fieldList) {
 
         $this->nodeType = $nodeType;
         $this->fieldList = $fieldList;
@@ -50,10 +58,15 @@ class EntityDisplay
         $this->setViewDisplayTeaser();
     }
 
+    public function getFormDisplayDefault() {
+
+        return $this->formDisplayDefault;
+    }
+
     /**
      * @return void
      */
-    protected function setFormDisplayDefault(){
+    protected function setFormDisplayDefault() {
 
         $this->resetFormDisplayDefault();
 
@@ -64,12 +77,12 @@ class EntityDisplay
 
         // Fields
         $weightCounter = 30;
-        foreach ($this->fieldList as $field){
+        foreach ($this->fieldList as $field) {
 
             $this->formDisplayDefault['dependencies']['config'][] = $field->getFieldConfigKey();
             $fieldContent = [];
 
-            switch ($field->getField()['field_type']){
+            switch ($field->getField()['field_type']) {
 
                 // TODO: check this (only float)
                 case 'float':
@@ -117,28 +130,20 @@ class EntityDisplay
         }
     }
 
-    public function getFormDisplayDefault(){
-
-        return $this->formDisplayDefault;
-    }
-
-    public function getFormDisplayDefaultConfigKey(){
+    public function getFormDisplayDefaultConfigKey() {
 
         return 'core.entity_form_display.node.' . $this->nodeType->getNodeTypeId() . '.default';
     }
 
-    /**
-     * @return void
-     */
-    protected function resetFormDisplayDefault(){
+    public function getViewDisplayDefault() {
 
-        $this->formDisplayDefault = Yaml::parse(ContentType::resourcesPath() . '/yml/config/core/core.entity_form_display.node._node.default.yml');
+        return $this->viewDisplayDefault;
     }
 
     /**
      * @return void
      */
-    protected function setViewDisplayDefault(){
+    protected function setViewDisplayDefault() {
 
         $this->resetViewDisplayDefault();
 
@@ -149,12 +154,12 @@ class EntityDisplay
 
         // Fields
         $weightCounter = 100;
-        foreach ($this->fieldList as $field){
+        foreach ($this->fieldList as $field) {
 
             $this->viewDisplayDefault['dependencies']['config'][] = $field->getFieldConfigKey();
             $fieldContent = [];
 
-            switch ($field->getField()['field_type']){
+            switch ($field->getField()['field_type']) {
 
                 // TODO: check this (only float)
                 case 'float':
@@ -199,28 +204,20 @@ class EntityDisplay
         }
     }
 
-    public function getViewDisplayDefault(){
-
-        return $this->viewDisplayDefault;
-    }
-
-    public function getViewDisplayDefaultConfigKey(){
+    public function getViewDisplayDefaultConfigKey() {
 
         return 'core.entity_view_display.node.' . $this->nodeType->getNodeTypeId() . '.default';
     }
 
-    /**
-     * @return void
-     */
-    protected function resetViewDisplayDefault(){
+    public function getViewDisplayTeaser() {
 
-        $this->viewDisplayDefault = Yaml::parse(ContentType::resourcesPath() . '/yml/config/core/core.entity_view_display.node._node.default.yml');
+        return $this->viewDisplayTeaser;
     }
 
     /**
      * @return void
      */
-    protected function setViewDisplayTeaser(){
+    protected function setViewDisplayTeaser() {
 
         $this->resetViewDisplayTeaser();
 
@@ -231,9 +228,9 @@ class EntityDisplay
 
         // Fields
         $weightCounter = 100;
-        foreach ($this->fieldList as $field){
+        foreach ($this->fieldList as $field) {
 
-            switch ($field->getField()['field_name']){
+            switch ($field->getField()['field_name']) {
 
                 case 'body':
                     $fieldContent = [
@@ -254,12 +251,7 @@ class EntityDisplay
         }
     }
 
-    public function getViewDisplayTeaser(){
-
-        return $this->viewDisplayTeaser;
-    }
-
-    public function getViewDisplayTeaserConfigKey(){
+    public function getViewDisplayTeaserConfigKey() {
 
         return 'core.entity_view_display.node.' . $this->nodeType->getNodeTypeId() . '.teaser';
     }
@@ -267,7 +259,23 @@ class EntityDisplay
     /**
      * @return void
      */
-    protected function resetViewDisplayTeaser(){
+    protected function resetFormDisplayDefault() {
+
+        $this->formDisplayDefault = Yaml::parse(ContentType::resourcesPath() . '/yml/config/core/core.entity_form_display.node._node.default.yml');
+    }
+
+    /**
+     * @return void
+     */
+    protected function resetViewDisplayDefault() {
+
+        $this->viewDisplayDefault = Yaml::parse(ContentType::resourcesPath() . '/yml/config/core/core.entity_view_display.node._node.default.yml');
+    }
+
+    /**
+     * @return void
+     */
+    protected function resetViewDisplayTeaser() {
 
         $this->viewDisplayTeaser = Yaml::parse(ContentType::resourcesPath() . '/yml/config/core/core.entity_view_display.node._node.teaser.yml');
     }

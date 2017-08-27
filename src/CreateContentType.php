@@ -1,6 +1,16 @@
 <?php
+/**
+ * DRUPAL 8 Content type tool.
+ * Copyright (C) 2017. Tarik Curto <centro.tarik@live.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ */
 
 namespace Drupal\content_type_tool;
+
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -8,8 +18,7 @@ use Symfony\Component\Yaml\Yaml;
  *
  * @package Drupal\custom_content_type
  */
-class CreateContentType
-{
+class CreateContentType {
 
     protected $nodeTypeInstance;
 
@@ -27,8 +36,7 @@ class CreateContentType
     protected $entityDisplayInstance;
     protected $configMap;
 
-    public function __construct()
-    {
+    public function __construct() {
 
         $this->nodeTypeInstance = new NodeType();
         $this->entityDisplayInstance = new EntityDisplay();
@@ -40,7 +48,7 @@ class CreateContentType
      * @param $options
      * @return string
      */
-    public function setNodeType($options){
+    public function setNodeType($options) {
 
         $nodeTypeId = $this->nodeTypeInstance->setNodeType($options);
         return $nodeTypeId;
@@ -51,7 +59,7 @@ class CreateContentType
      *
      * @return string
      */
-    public function addFieldBody(){
+    public function addFieldBody() {
 
         $this->fieldInstance = new Field();
 
@@ -71,7 +79,7 @@ class CreateContentType
      * @param string $contentType
      * @return string
      */
-    public function addField($options, $contentType = 'string_textfield'){
+    public function addField($options, $contentType = 'string_textfield') {
 
         $this->fieldInstance = new Field();
         $this->fieldStorageInstance = new FieldStorage();
@@ -91,7 +99,7 @@ class CreateContentType
      *
      * @return void
      */
-    public function setEntityDisplay(){
+    public function setEntityDisplay() {
 
         $this->entityDisplayInstance->setEntityDisplay($this->nodeTypeInstance, $this->fieldInstanceList);
     }
@@ -104,7 +112,7 @@ class CreateContentType
      *
      * @return void
      */
-    public function save(){
+    public function save() {
 
         $this->setConfigMap();
 
@@ -118,7 +126,7 @@ class CreateContentType
      *
      * @return void
      */
-    protected function setConfigMap(){
+    protected function setConfigMap() {
 
         $this->configMap[$this->nodeTypeInstance->getNodeTypeConfigKey()] = $this->nodeTypeInstance->getNodeType();
         foreach ($this->fieldInstanceList as $configKey => $fieldInstance)
