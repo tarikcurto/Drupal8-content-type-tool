@@ -105,20 +105,47 @@ class CreateContentType {
     }
 
     /**
-     * Save all configuration of content type.
+     * Save all configuration of content type in
+     * a compressed module stored in a public file
+     * system of a drupal installation.
      *
      * Only call to method when you have all you
      * content type structure.
      *
-     * @return void
+     * @return string Compressed module file uri.
      */
     public function save() {
 
         $this->setConfigMap();
 
-        foreach ($this->configMap as $configKey => $config) {
-            echo PHP_EOL . PHP_EOL . $configKey . PHP_EOL . Yaml::dump($config);
-        }
+        // Build compressed tar.gz module with config install.
+        $tempDir = sys_get_temp_dir();
+        $moduleName = 'custom_post_type' . '_' . time();
+        $moduleTar = $moduleName . '.tar';
+        $moduleTarGz = $moduleTar . '.gz';
+        $moduleTarPath = $tempDir . '/' . $moduleName . '.tar';
+        $moduleTarGzPath = $moduleTarPath . '.gz';
+        $modulePharData = new \PharData($moduleTarPath);
+
+        // Build module.info.yml
+        $moduleInfoFile = Yaml::parse(ContentType::resourcesPath() . '/yml/module/module.info.yml');
+        $moduleInfoFile['description'] .= " {$moduleName}}";
+        $modulePharData["/{$moduleName}/{$moduleName}.info.yml"] = Yaml::dump($moduleInfoFile);
+
+        // Build config/install YML files.
+        foreach ($this->configMap as $configKey => $config)
+            $modulePharData["/{$moduleName}/config/install/{$configKey}.yml"] = Yaml::dump($config);
+
+        // Build tar.gz
+        $modulePharData->compress(\Phar::GZ);
+
+        // Register file in drupal file manager. Make public.
+        $moduleTarGzContent = file_get_contents($moduleTarGzPath);
+        $moduleTarGzDestination = "public://$moduleTarGz";
+        $moduleTarGzFile = file_save_data($moduleTarGzContent, $moduleTarGzDestination, FILE_EXISTS_RENAME);
+        $moduleTarGzUri = $moduleTarGzFile->getFileUri();
+
+        return $moduleTarGzUri;
     }
 
     /**

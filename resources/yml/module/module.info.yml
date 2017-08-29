@@ -1,0 +1,6 @@
+name: Content type module
+description: Content type module for:
+package: Custom
+
+type: module
+core: 8.x
