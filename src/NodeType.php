@@ -47,6 +47,8 @@ class NodeType {
 
         $this->nodeType['type'] = $options['type'];
         $this->nodeType['name'] = $options['name'];
+
+        return $this->nodeType['type'];
     }
 
     /**
